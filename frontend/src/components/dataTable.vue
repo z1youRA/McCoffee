@@ -17,10 +17,10 @@ const columns = [
     format: val => `${val}`,
     sortable: true
   },
-  { name: 'pid', align: 'center', label: 'Pid', field: 'pid', sortable: true },
-  { name: 'operation', align: 'center', label: 'Operation', field: 'Operation', sortable: false },
-  { name: 'result', label: 'Result', field: 'result', sortable: false },
-  { name: 'remark', label: 'Remark', field: '', sortable: false }
+  { name: 'pid', align: 'left', label: 'Pid', field: 'pid', sortable: true },
+  { name: 'operation', align: 'left', label: 'Operation', field: 'Operation', sortable: false },
+  { name: 'result', align: 'left', label: 'Result', field: 'result', sortable: false },
+  { name: 'warning', align: 'left', label: 'Warning', field: 'Warning', sortable: false }
 ]
 
 const rows = dataArr
@@ -29,10 +29,15 @@ const rows = dataArr
 <template>
     <div class="q-pa-md">
       <q-table
-        title="Treats"
+        style="height: calc(100vh - 10vh - 4vh - 4rem)"
+        title="Logs"
         :rows="rows"
         :columns="columns"
-        row-key="name"
+        row-key="index"
+        :pagination="{
+          rowsPerPage:'15',
+        }"
+        :virtual-scroll="true"
       >
 
         <template v-slot:header="props">
@@ -63,18 +68,16 @@ const rows = dataArr
           </q-tr>
           <q-tr v-show="props.expand" :props="props">
             <q-td colspan="100%">
-              <div class="text-left">This is expand slot for row above: {{ props.row.name }}.</div>
-              <!-- <div class="text-left">
+              <div class="text-left">
                 <q-list bordered separator>
                   <q-item v-ripple v-for="attr in props.row.attributes" :key="attr.id">
                     <q-item-section> {{attr}} : {{props.row[attr]}}</q-item-section>
                   </q-item>
                 </q-list>
-              </div> -->
+              </div>
             </q-td>
           </q-tr>
         </template>
-
       </q-table>
     </div>
   </template>

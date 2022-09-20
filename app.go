@@ -19,7 +19,7 @@ func NewApp() *App {
 
 func (app *App) startup(ctx context.Context) {
 	app.ctx = ctx
-	runtime.WindowMaximise(ctx)
+	// runtime.WindowMaximise(ctx)
 	app.StartListenUDP()
 }
 

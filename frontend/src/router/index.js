@@ -1,8 +1,10 @@
 import { createRouter, createWebHistory } from 'vue-router'
-import Home from '../views/Home.vue'
-import Heap from '../views/Heap.vue'
-import Registry from '../views/Registry.vue'
-import File from '../views/File.vue'
+import Home from '../views/HomePage.vue'
+import Heap from '../views/HeapPage.vue'
+import Registry from '../views/RegistryPage.vue'
+import File from '../views/FilePage.vue'
+import Network from '../views/NetworkPage.vue'
+import Memory from '../views/MemoryPage.vue'
 
 const routes = [
   {
@@ -24,7 +26,18 @@ const routes = [
     path: '/file',
     name: 'File',
     component: File
+  },
+  {
+    path: '/network',
+    name: 'Network',
+    component: Network
+  },
+  {
+    path: '/memory',
+    name: 'Memory',
+    component: Memory
   }
+
 ]
 
 const router = createRouter({

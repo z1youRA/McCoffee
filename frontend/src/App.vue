@@ -24,10 +24,40 @@ function timeConverter (UNIX_timestamp) {
   return time
 }
 
+let beginTime = 0
+let foldersInOneSec = 0
+let pathArr = []
+function detectThreat (messageJson) {
+  if ('path' in messageJson) {
+    const pathWithoutFile = messageJson.path.substr(0, messageJson.path.lastIndexOf('\\'))
+    console.log('path:' + messageJson.path)
+    console.log(pathWithoutFile)
+    console.log('beginTime:' + beginTime)
+    console.log('time:' + messageJson.time)
+
+    if (beginTime === 0 || messageJson.time - beginTime >= 1000) {
+      beginTime = messageJson.time
+      pathArr = []
+      pathArr.push(pathWithoutFile)
+      foldersInOneSec = 1
+    } else if (pathArr.includes(pathWithoutFile) === false) {
+      pathArr.push(pathWithoutFile)
+      foldersInOneSec++
+    }
+
+    if (foldersInOneSec >= 9) {
+      messageJson.Warning = 'TooManyFoldersGotModified'
+    }
+    console.log(pathArr)
+    console.log(beginTime)
+    console.log(foldersInOneSec)
+    console.log(pathArr.length)
+  }
+}
+
 EventsOn('receiveUDPMessage', (message) => {
   const messageJson = JSON.parse(message)
-  console.log(messageJson["result"]);
-
+  detectThreat(messageJson)
   messageJson.time = timeConverter(parseInt(messageJson.time))
   // eslint-disable-next-line eqeqeq
   if (messageJson.result == 1) { messageJson.result = 'SUCCESS' } else { messageJson.result = 'FAILED' }
@@ -50,18 +80,21 @@ EventsOn('receiveUDPMessage', (message) => {
   Object.entries(messageJson).forEach(([key, value]) => {
     if (key !== 'attributes') { messageJson.attributes.push(key) }
   })
-  console.log(messageJson.attributes)
 })
 
 </script>
 
 <template>
-  <headerVue />
-  <div class="main">
-  <router-view :logArr="logArr" :heapArr="heapArr" :fileArr="fileArr" :registryArr="registryArr"></router-view>
-    <div class="footbar">
-      <footbarVue />
+  <div class="App">
+    <nav>
+      <headerVue class="header"/>
+    </nav>
+    <div class="main">
+      <router-view :logArr="logArr" :heapArr="heapArr" :fileArr="fileArr" :registryArr="registryArr"></router-view>
     </div>
+    <footer>
+      <footbarVue class="footbar" />
+    </footer>
   </div>
 </template>
 
@@ -80,9 +113,11 @@ body {
   height: 20rem;
 }
 
-/* .footbar {
-  position: relative;
-  border: solid;
-  margin-top: -10rem;
-} */
+.footbar {
+  position: fixed;
+  left: 0;
+  bottom: 0;
+  width: 100%;
+  text-align: center;
+}
 </style>
