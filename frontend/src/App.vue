@@ -2,7 +2,7 @@
 <script setup>
 import headerVue from './components/header.vue'
 import footbarVue from './components/footbar.vue'
-import { EventsOn } from '../wailsjs/runtime/runtime'
+import { EventsOn } from '../wailsjs/runtime'
 
 const logArr = $ref([])
 const heapArr = $ref([])
@@ -30,10 +30,6 @@ let pathArr = []
 function detectThreat (messageJson) {
   if ('path' in messageJson) {
     const pathWithoutFile = messageJson.path.substr(0, messageJson.path.lastIndexOf('\\'))
-    console.log('path:' + messageJson.path)
-    console.log(pathWithoutFile)
-    console.log('beginTime:' + beginTime)
-    console.log('time:' + messageJson.time)
 
     if (beginTime === 0 || messageJson.time - beginTime >= 1000) {
       beginTime = messageJson.time
@@ -48,14 +44,10 @@ function detectThreat (messageJson) {
     if (foldersInOneSec >= 9) {
       messageJson.Warning = 'TooManyFoldersGotModified'
     }
-    console.log(pathArr)
-    console.log(beginTime)
-    console.log(foldersInOneSec)
-    console.log(pathArr.length)
   }
 }
 
-EventsOn('receiveUDPMessage', (message) => {
+function transUDPMsg (message) {
   const messageJson = JSON.parse(message)
   detectThreat(messageJson)
   messageJson.time = timeConverter(parseInt(messageJson.time))
@@ -80,7 +72,9 @@ EventsOn('receiveUDPMessage', (message) => {
   Object.entries(messageJson).forEach(([key, value]) => {
     if (key !== 'attributes') { messageJson.attributes.push(key) }
   })
-})
+}
+
+EventsOn('receiveUDPMessage', transUDPMsg)
 
 </script>
 
