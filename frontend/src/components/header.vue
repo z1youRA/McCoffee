@@ -5,15 +5,16 @@
       <q-bar class="bg-primary text-white" style="height: 4vh">
         <div class="cursor-pointer">McCoffee</div>
         <q-space />
-        <q-btn dense flat icon="minimize" />
-        <q-btn dense flat icon="crop_square" />
-        <q-btn dense flat icon="close" />
+        <q-btn @click="WindowMinimise()" dense flat icon="minimize" />
+        <q-btn @click="WindowToggleMaximise()" dense flat icon="crop_square" />
+        <q-btn @click="Quit()" dense flat icon="close" />
       </q-bar>
     </div>
   </main>
 </template>
 
 <script setup>
+import { WindowMinimise, Quit, WindowToggleMaximise } from '../../wailsjs/runtime/runtime';
 </script>
 
 <style scoped>
