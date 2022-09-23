@@ -14,7 +14,7 @@
 </template>
 
 <script setup>
-import { WindowMinimise, Quit, WindowToggleMaximise } from '../../wailsjs/runtime/runtime';
+import { WindowMinimise, Quit, WindowToggleMaximise } from '../../wailsjs/runtime/runtime'
 </script>
 
 <style scoped>

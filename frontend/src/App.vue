@@ -1,3 +1,4 @@
+<!-- eslint-disable eqeqeq -->
 <!-- eslint-disable no-undef -->
 <script setup>
 import headerVue from './components/header.vue'
@@ -8,6 +9,15 @@ const logArr = $ref([])
 const heapArr = $ref([])
 const fileArr = $ref([])
 const registryArr = $ref([])
+const networkArr = $ref([])
+const memoryArr = $ref([])
+
+function b64DecodeUnicode (str) {
+  // Going backwards: from bytestream, to percent-encoding, to original string.
+  return decodeURIComponent(atob(str).split('').map(function (c) {
+    return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2)
+  }).join(''))
+}
 
 // eslint-disable-next-line camelcase
 function timeConverter (UNIX_timestamp) {
@@ -62,9 +72,26 @@ function transUDPMsg (message) {
     messageJson.index = fileArr.length
     fileArr.push(messageJson)
     logArr.push(messageJson)
+    // if ('lpBufferValue' in messageJson) {
+    //   messageJson.lpBufferValue = b64DecodeUnicode(messageJson.lpBufferValue)
+    // }
   } else if (messageJson.Operation.includes('Reg')) {
     messageJson.index = registryArr.length
     registryArr.push(messageJson)
+    logArr.push(messageJson)
+  } else if (messageJson.Operation === 'socket' || messageJson.Operation === 'connect' || messageJson.Operation === 'recv' || messageJson.Operation === 'send') {
+    if ('bufValue' in messageJson) {
+      messageJson.bufValue = b64DecodeUnicode(messageJson.bufValue)
+    }
+    if ('nameValue' in messageJson) {
+      messageJson.nameValue = b64DecodeUnicode(messageJson.nameValue)
+    }
+    messageJson.index = networkArr.length
+    networkArr.push(messageJson)
+    logArr.push(messageJson)
+  } else if (messageJson.Operation == 'memcpy') {
+    messageJson.index = memoryArr.length
+    memoryArr.push(messageJson)
     logArr.push(messageJson)
   }
 
@@ -84,7 +111,7 @@ EventsOn('receiveUDPMessage', transUDPMsg)
       <headerVue class="header"/>
     </nav>
     <div class="main">
-      <router-view :logArr="logArr" :heapArr="heapArr" :fileArr="fileArr" :registryArr="registryArr"></router-view>
+      <router-view :networkArr="networkArr" :memoryArr="memoryArr" :logArr="logArr" :heapArr="heapArr" :fileArr="fileArr" :registryArr="registryArr"></router-view>
     </div>
     <footer>
       <footbarVue class="footbar" />
